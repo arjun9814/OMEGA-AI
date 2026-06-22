@@ -108,53 +108,85 @@ export function AICore({ isConnected, isSpeaking, volume, statusText, emotion, o
         <p className={`text-sm ${style.textDim} mt-1`}>Your Intelligent Assistant</p>
       </div>
 
-      {/* Core Center */}
+       {/* Core Center */}
       <div className="relative flex items-center justify-center">
          
-         {/* Inner glowing core */}
+         {/* Inner glowing core background */}
+         <div className={`absolute w-72 h-72 rounded-full ${style.bg} blur-[80px] opacity-30`} />
+
          <motion.div 
            whileHover={{ scale: 1.05 }}
            whileTap={{ scale: 0.95 }}
            onClick={onToggleConnect}
-           className={`w-48 h-48 rounded-full flex items-center justify-center relative z-10 transition-all duration-700 cursor-pointer ${isConnected ? `bg-[#0f172a] shadow-[0_0_80px_rgba(255,255,255,0.1)] ${style.shadow} border ${style.border}` : `bg-black/50 border border-white/10 ${style.hoverBorder} shadow-[0_0_30px_rgba(0,0,0,0.5)]`}`}>
-           <div className="text-center">
-             <div className={`text-3xl font-bold ${style.text} tracking-wider`}>OMEGA</div>
+           className={`w-48 h-48 rounded-full flex items-center justify-center relative z-20 transition-all duration-700 cursor-pointer ${isConnected ? `bg-black/80 shadow-[0_0_80px_rgba(255,255,255,0.1)] ${style.shadow} border border-${style.border.split('-')[1]}-400/80` : `bg-black/50 border border-white/10 ${style.hoverBorder} shadow-[0_0_30px_rgba(0,0,0,0.5)]`}`}>
+           <div className={`absolute inset-0 rounded-full bg-gradient-to-tr from-transparent to-${style.bg.split('-')[1]}-500/20`} />
+           <div className="text-center relative z-10">
+             <div className={`text-4xl font-bold ${style.text} tracking-wider`} style={{ textShadow: `0 0 20px currentColor` }}>OMEGA</div>
              <div className={`text-xl ${style.textDim} tracking-[0.2em] mt-1`}>AI</div>
              <div className={`text-[10px] mt-2 font-mono uppercase tracking-widest ${style.textMuted}`}>{emotion}</div>
            </div>
          </motion.div>
 
          {/* Animating Rings */}
-         <div className="absolute inset-[-40px]">
+         {/* Thick solid glowing inner ring */}
+         <div className="absolute inset-[-20px] pointer-events-none">
+           <motion.div 
+             animate={{ rotate: isConnected ? -360 : 0, scale: isConnected ? scale * 1.02 : 1 }}
+             transition={{ rotate: { duration: 40, repeat: Infinity, ease: "linear" }, scale: { type: "spring", stiffness: 100, damping: 10 } }}
+             className={`w-full h-full rounded-full border-[6px] ${style.borderDashed.replace('500/30', '400/60')} border-solid opacity-80`}
+             style={{ boxShadow: `0 0 30px currentColor`, fill: 'none' }}
+           />
+         </div>
+
+         <div className="absolute inset-[-50px] pointer-events-none z-10">
            <motion.div 
              animate={{ rotate: isConnected ? 360 : 0, scale: isConnected ? scale : 1 }}
              transition={{ rotate: { duration: 25, repeat: Infinity, ease: "linear" }, scale: { type: "spring", stiffness: 100, damping: 10 } }}
-             className={`w-full h-full rounded-full border-2 ${style.borderDashed} border-dashed`}
+             className={`w-full h-full rounded-full border-4 ${style.borderDashed.replace('500/30', '400/80')} border-dashed shadow-[inset_0_0_20px_currentColor]`}
            />
          </div>
 
-         <div className="absolute inset-[-80px]">
+         <div className="absolute inset-[-80px] pointer-events-none">
            <motion.div 
              animate={{ rotate: isConnected ? -360 : 0, scale: isConnected ? scale * 1.05 : 1 }}
              transition={{ rotate: { duration: 35, repeat: Infinity, ease: "linear" }, scale: { type: "spring", stiffness: 100, damping: 10 } }}
-             className={`w-full h-full rounded-full border ${style.borderDotted} border-dotted`}
+             className={`w-full h-full rounded-full border-[2px] ${style.borderDotted.replace('500/40', '400/60')} border-dotted opacity-70`}
            />
            {/* Crosshairs */}
-           <div className={`absolute top-0 inset-x-0 h-full w-px bg-gradient-to-b from-transparent via-cyan-500/20 to-transparent mx-auto pointer-events-none`} />
-           <div className={`absolute left-0 inset-y-0 w-full h-px bg-gradient-to-r from-transparent via-cyan-500/20 to-transparent my-auto pointer-events-none`} />
+           <div className={`absolute top-0 inset-x-0 h-full w-[2px] bg-gradient-to-b from-transparent via-${style.bg.split('-')[1]}-500/30 to-transparent mx-auto pointer-events-none`} />
+           <div className={`absolute left-0 inset-y-0 w-full h-[2px] bg-gradient-to-r from-transparent via-${style.bg.split('-')[1]}-500/30 to-transparent my-auto pointer-events-none`} />
          </div>
 
-         <div className="absolute inset-[-140px]">
+         {/* Additional outer thin solid ring */}
+         <div className="absolute inset-[-110px] pointer-events-none">
+           <motion.div 
+             animate={{ rotate: isConnected ? 180 : 0 }}
+             transition={{ duration: 80, repeat: Infinity, ease: "linear" }}
+             className={`w-full h-full rounded-full border border-${style.bg.split('-')[1]}-800/60 relative`}
+           >
+              <div className={`absolute top-0 left-1/2 -ml-16 w-32 h-[3px] ${style.bg} blur-[2px] rounded-full`} />
+           </motion.div>
+         </div>
+
+         <div className="absolute inset-[-140px] pointer-events-none">
            <motion.div 
              animate={{ rotate: isConnected ? 360 : 0 }}
              transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
-             className={`w-full h-full rounded-full border ${style.borderOuter} relative`}
+             className={`w-full h-full rounded-full border border-${style.bg.split('-')[1]}-900/40 relative shadow-[0_0_100px_inset_rgba(8,145,178,0.05)]`}
            >
               {/* Markers along the outer ring */}
-              <div className={`absolute top-[-4px] left-1/2 -ml-1 w-2 h-2 ${style.bg} rounded-full ${style.shadowPulse}`} />
-              <div className={`absolute bottom-[-4px] left-1/2 -ml-1 w-2 h-2 ${style.bg} rounded-full ${style.shadowPulse}`} />
-              <div className={`absolute left-[-4px] top-1/2 -mt-1 w-2 h-2 ${style.bg} rounded-full ${style.shadowPulse}`} />
-              <div className={`absolute right-[-4px] top-1/2 -mt-1 w-2 h-2 ${style.bg} rounded-full ${style.shadowPulse}`} />
+              <div className={`absolute top-[-5px] left-1/2 -ml-1.5 w-3 h-3 ${style.bg} rounded-full ${style.shadowPulse} shadow-[0_0_15px_currentColor]`} />
+              <div className={`absolute bottom-[-5px] left-1/2 -ml-1.5 w-3 h-3 ${style.bg} rounded-full ${style.shadowPulse} shadow-[0_0_15px_currentColor]`} />
+              <div className={`absolute left-[-5px] top-1/2 -mt-1.5 w-3 h-3 ${style.bg} rounded-full ${style.shadowPulse} shadow-[0_0_15px_currentColor]`} />
+              <div className={`absolute right-[-5px] top-1/2 -mt-1.5 w-3 h-3 ${style.bg} rounded-full ${style.shadowPulse} shadow-[0_0_15px_currentColor]`} />
+              
+              {/* Decorative triangles on outer ring */}
+              <svg className={`absolute -top-10 left-1/2 -ml-3 w-6 h-6 text-${style.bg.split('-')[1]}-500`} viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2L2 22h20L12 2z" opacity="0.5"/>
+              </svg>
+              <svg className={`absolute -bottom-10 left-1/2 -ml-3 w-6 h-6 text-${style.bg.split('-')[1]}-500 rotate-180`} viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2L2 22h20L12 2z" opacity="0.5"/>
+              </svg>
            </motion.div>
          </div>
 

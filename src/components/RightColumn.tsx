@@ -16,8 +16,16 @@ export function RightColumn() {
                <span className="text-5xl font-light text-white tracking-tighter">24°C</span>
                <span className="text-sm text-white/60 mt-1">Clear Sky</span>
             </div>
-            {/* Visual placeholder for Moon/Sun */}
-            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-zinc-400 to-zinc-800 shadow-[0_0_20px_rgba(255,255,255,0.1)] mb-2" />
+            {/* Visual for Moon */}
+            <div className="relative w-20 h-20 mb-2">
+              <div className="absolute inset-0 bg-blue-500/20 blur-xl rounded-full" />
+              <img 
+                src="/src/assets/images/omega_realistic_moon_1782091615120.jpg" 
+                alt="Moon" 
+                referrerPolicy="no-referrer"
+                className="w-full h-full rounded-full object-cover shadow-[0_0_20px_rgba(255,255,255,0.2)] animate-[spin_60s_linear_infinite]"
+              />
+            </div>
           </div>
           <div className="flex justify-between mt-6 pt-4 border-t border-white/10">
             <WeatherDetail label="Humidity" value="45%" icon={<CloudRain size={14} />} />

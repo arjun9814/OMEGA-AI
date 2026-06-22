@@ -7,7 +7,7 @@ export function ChatModule() {
   ]);
   const [input, setInput] = useState('');
 
-  const handleSend = (e: React.FormEvent) => {
+  const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
     
@@ -15,10 +15,19 @@ export function ChatModule() {
     setMessages(prev => [...prev, { id: Date.now(), sender: 'user', text: userMsg }]);
     setInput('');
     
-    // Simulate AI response
-    setTimeout(() => {
-      setMessages(prev => [...prev, { id: Date.now() + 1, sender: 'ai', text: 'I have processed your request: "' + userMsg + '". What else would you like me to do?' }]);
-    }, 1000);
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ message: userMsg })
+      });
+      const data = await res.json();
+      setMessages(prev => [...prev, { id: Date.now() + 1, sender: 'ai', text: data.reply || 'No response.' }]);
+    } catch (e) {
+      setMessages(prev => [...prev, { id: Date.now() + 1, sender: 'ai', text: 'Error: Could not process request.' }]);
+    }
   };
 
   return (

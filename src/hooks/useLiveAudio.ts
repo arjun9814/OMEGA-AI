@@ -98,8 +98,8 @@ export function useLiveAudio(onCommand?: (command: any) => void) {
         }
       };
 
-      ws.onerror = (e) => {
-        console.error("WebSocket error:", e);
+      ws.onerror = (e: any) => {
+        console.error("WebSocket error:", e?.message || "Connection error");
       };
 
       ws.onclose = () => {
@@ -124,8 +124,12 @@ export function useLiveAudio(onCommand?: (command: any) => void) {
     setError(null);
     wsRef.current?.close();
     processorRef.current?.disconnect();
-    inputCtxRef.current?.close();
-    outputCtxRef.current?.close();
+    if (inputCtxRef.current && inputCtxRef.current.state !== 'closed') {
+      inputCtxRef.current.close().catch(() => {});
+    }
+    if (outputCtxRef.current && outputCtxRef.current.state !== 'closed') {
+      outputCtxRef.current.close().catch(() => {});
+    }
     streamRef.current?.getTracks().forEach(t => t.stop());
     setIsConnected(false);
     setIsRecording(false);
