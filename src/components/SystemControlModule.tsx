@@ -112,6 +112,20 @@ export function SystemControlModule() {
                    <StatusItem label="Threat Level" value="ZERO (SECURE)" color="text-cyan-400" />
                    <StatusItem label="Active Monitoring" value="ONLINE" color="text-cyan-400" />
                    
+                   <div className="pt-4 border-t border-cyan-500/20 mt-4 space-y-4">
+                      <h4 className="text-xs font-mono text-cyan-500/70 tracking-widest uppercase">Hardware Access</h4>
+                      <div className="flex flex-col gap-2">
+                        <div className="flex justify-between text-xs tracking-wider border border-cyan-500/20 bg-cyan-900/10 p-2 rounded items-center">
+                           <span><span className="text-cyan-400 font-bold">CAMERA:</span> PERMITTED</span>
+                           <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                        </div>
+                        <div className="flex justify-between text-xs tracking-wider border border-cyan-500/20 bg-cyan-900/10 p-2 rounded items-center">
+                           <span><span className="text-cyan-400 font-bold">STORAGE:</span> PERMITTED</span>
+                           <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+                        </div>
+                      </div>
+                   </div>
+
                    <div className="pt-4 border-t border-cyan-500/20">
                       <p className="text-[10px] text-cyan-500/50 font-mono leading-relaxed">
                         If anyone besides you attempts to send inappropriate messages or perform unwanted actions, Omega AI will detect the anomaly and initiate a complete lockdown of the device.

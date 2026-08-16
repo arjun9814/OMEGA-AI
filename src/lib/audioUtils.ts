@@ -17,31 +17,37 @@ export function pcmToBase64(buffer: Float32Array) {
 }
 
 export function playAudioChunk(audioCtx: AudioContext, base64: string, nextStartTimeRef: MutableRefObject<number>) {
-  const binary = atob(base64);
-  const len = binary.length;
-  const bytes = new Uint8Array(len);
-  for(let i = 0; i < len; i++) bytes[i] = binary.charCodeAt(i);
-  
-  const int16Array = new Int16Array(bytes.buffer);
-  const float32Array = new Float32Array(int16Array.length);
-  for(let i = 0; i < int16Array.length; i++) {
-      float32Array[i] = int16Array[i] / 32768.0;
+  try {
+    const binary = atob(base64);
+    const len = binary.length;
+    const evenLen = len % 2 === 0 ? len : len - 1;
+    const bytes = new Uint8Array(evenLen);
+    for(let i = 0; i < evenLen; i++) bytes[i] = binary.charCodeAt(i);
+    
+    const int16Array = new Int16Array(bytes.buffer);
+    const float32Array = new Float32Array(int16Array.length);
+    for(let i = 0; i < int16Array.length; i++) {
+        float32Array[i] = int16Array[i] / 32768.0;
+    }
+    
+    const buffer = audioCtx.createBuffer(1, float32Array.length, 24000);
+    buffer.getChannelData(0).set(float32Array);
+    
+    const source = audioCtx.createBufferSource();
+    source.buffer = buffer;
+    source.connect(audioCtx.destination);
+    
+    const currentTime = audioCtx.currentTime;
+    if (nextStartTimeRef.current < currentTime) {
+       nextStartTimeRef.current = currentTime + 0.02; 
+    }
+    
+    source.start(nextStartTimeRef.current);
+    nextStartTimeRef.current += buffer.duration;
+    
+    return source;
+  } catch (e) {
+    console.error("Audio playback error:", e);
+    return null;
   }
-  
-  const buffer = audioCtx.createBuffer(1, float32Array.length, 24000);
-  buffer.getChannelData(0).set(float32Array);
-  
-  const source = audioCtx.createBufferSource();
-  source.buffer = buffer;
-  source.connect(audioCtx.destination);
-  
-  const currentTime = audioCtx.currentTime;
-  if (nextStartTimeRef.current < currentTime) {
-     nextStartTimeRef.current = currentTime + 0.02; 
-  }
-  
-  source.start(nextStartTimeRef.current);
-  nextStartTimeRef.current += buffer.duration;
-  
-  return source;
 }

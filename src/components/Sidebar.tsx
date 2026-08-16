@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { 
-  LayoutDashboard, MessageSquare, Mic, SlidersHorizontal, 
+  Home, LayoutDashboard, MessageSquare, Mic, SlidersHorizontal, 
   Cpu, FolderOpen, Calendar, Users, MonitorPlay, Settings,
   ChevronRight, ChevronLeft, Dumbbell
 } from 'lucide-react';
@@ -35,8 +35,9 @@ export function Sidebar({ activeTab, onTabChange }: { activeTab: string, onTabCh
           </div>
           
           <nav className="flex-1 overflow-y-auto overflow-x-hidden flex flex-col gap-2 mt-4 custom-scrollbar">
+            <SidebarItem icon={<Home size={18} />} label="Home" active={activeTab === 'Home'} onClick={() => onTabChange('Home')} />
             <SidebarItem icon={<LayoutDashboard size={18} />} label="Dashboard" active={activeTab === 'Dashboard'} onClick={() => onTabChange('Dashboard')} />
-            <SidebarItem icon={<MessageSquare size={18} />} label="Chat" active={activeTab === 'Chat'} onClick={() => onTabChange('Chat')} />
+            <SidebarItem icon={<MessageSquare size={18} />} label="Soulmate" active={activeTab === 'Soulmate'} onClick={() => onTabChange('Soulmate')} />
             <SidebarItem icon={<Mic size={18} />} label="Voice Commands" active={activeTab === 'Voice Commands'} onClick={() => onTabChange('Voice Commands')} />
             <SidebarItem icon={<SlidersHorizontal size={18} />} label="System Control" active={activeTab === 'System Control'} onClick={() => onTabChange('System Control')} />
             <SidebarItem icon={<Cpu size={18} />} label="Automation" active={activeTab === 'Automation'} onClick={() => onTabChange('Automation')} />

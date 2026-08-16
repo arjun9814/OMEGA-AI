@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { motion } from 'motion/react';
 
 const emotionStyles: Record<string, any> = {
@@ -105,7 +105,6 @@ export function AICore({ isConnected, isSpeaking, volume, statusText, emotion, o
       {/* Title */}
       <div className="absolute top-0 flex flex-col items-center">
         <h1 className="text-3xl font-light text-white tracking-widest">OMEGA <span className={`font-bold ${style.text}`}>AI</span></h1>
-        <p className={`text-sm ${style.textDim} mt-1`}>Your Intelligent Assistant</p>
       </div>
 
        {/* Core Center */}
@@ -118,13 +117,26 @@ export function AICore({ isConnected, isSpeaking, volume, statusText, emotion, o
            whileHover={{ scale: 1.05 }}
            whileTap={{ scale: 0.95 }}
            onClick={onToggleConnect}
-           className={`w-48 h-48 rounded-full flex items-center justify-center relative z-20 transition-all duration-700 cursor-pointer ${isConnected ? `bg-black/80 shadow-[0_0_80px_rgba(255,255,255,0.1)] ${style.shadow} border border-${style.border.split('-')[1]}-400/80` : `bg-black/50 border border-white/10 ${style.hoverBorder} shadow-[0_0_30px_rgba(0,0,0,0.5)]`}`}>
-           <div className={`absolute inset-0 rounded-full bg-gradient-to-tr from-transparent to-${style.bg.split('-')[1]}-500/20`} />
-           <div className="text-center relative z-10">
-             <div className={`text-4xl font-bold ${style.text} tracking-wider`} style={{ textShadow: `0 0 20px currentColor` }}>OMEGA</div>
-             <div className={`text-xl ${style.textDim} tracking-[0.2em] mt-1`}>AI</div>
-             <div className={`text-[10px] mt-2 font-mono uppercase tracking-widest ${style.textMuted}`}>{emotion}</div>
-           </div>
+           animate={{ 
+             boxShadow: isConnected ? [
+               `0 0 20px var(--color-shadow)`,
+               `0 0 80px var(--color-shadow)`,
+               `0 0 20px var(--color-shadow)`
+             ] : '0 0 0px transparent'
+           }}
+           transition={{ duration: 2, repeat: Infinity }}
+           className={`w-64 h-64 rounded-full flex items-center justify-center relative z-20 transition-all duration-700 cursor-pointer ${isConnected ? `bg-black/80 ${style.shadow} border-2 border-${style.border.split('-')[1]}-400/80` : `bg-black/50 border border-white/10 ${style.hoverBorder} shadow-[0_0_30px_rgba(0,0,0,0.5)]`} overflow-hidden`}
+           style={{ '--color-shadow': style.shadowPulse.match(/#([0-9a-fA-F]+)/)?.[0] || '#22d3ee' } as any}
+         >
+           
+                      <div className={`absolute inset-0 bg-gradient-to-tr from-transparent to-${style.bg.split('-')[1]}-500/30 mix-blend-overlay z-10 transition-colors duration-700 pointer-events-none`} />
+
+                      <ParticleSphere 
+                        color={style.shadowPulse.match(/#([0-9a-fA-F]+)/)?.[0] || '#22d3ee'} 
+                        isConnected={isConnected} 
+                        volume={volume} 
+                      />
+
          </motion.div>
 
          {/* Animating Rings */}
@@ -229,4 +241,132 @@ function StatusBadge({ label, active, color }: { label: string, active: boolean,
       {label}
     </div>
   );
+}
+
+function ParticleSphere({ color, isConnected, volume }: { color: string, isConnected: boolean, volume: number }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d', { alpha: true });
+    if (!ctx) return;
+
+    let animationFrameId: number;
+    let time = 0;
+
+    const particles: { x: number, y: number, z: number, origX: number, origY: number, origZ: number, speed: number, offset: number, isAura: boolean }[] = [];
+    const numParticles = 8000; 
+    const radius = 115;
+
+    const phi = Math.PI * (3 - Math.sqrt(5));
+    for (let i = 0; i < numParticles; i++) {
+      const isAura = i > numParticles * 0.75; // last 25% are aura
+      const y = 1 - (i / (numParticles - 1)) * 2; 
+      const r = Math.sqrt(1 - y * y); 
+      const theta = phi * i; 
+
+      const x = Math.cos(theta) * r;
+      const z = Math.sin(theta) * r;
+
+      // Aura particles spread out further and more irregularly
+      const rMultiplier = isAura ? 1 + Math.random() * 0.4 : 1 - Math.random() * 0.1;
+
+      particles.push({
+        origX: x * radius * rMultiplier,
+        origY: y * radius * rMultiplier,
+        origZ: z * radius * rMultiplier,
+        x: 0, y: 0, z: 0,
+        speed: 0.2 + Math.random() * 1.5,
+        offset: Math.random() * Math.PI * 2,
+        isAura
+      });
+    }
+
+    const render = () => {
+      time += 0.01;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+
+      const rotX = time * 0.3;
+      const rotY = time * 0.5;
+
+      const cosX = Math.cos(rotX);
+      const sinX = Math.sin(rotX);
+      const cosY = Math.cos(rotY);
+      const sinY = Math.sin(rotY);
+
+      const currentVolume = isConnected ? volume : 0;
+      const expand = 1 + currentVolume * 0.3;
+
+      // Glow effect mapped to emotion color
+      ctx.shadowBlur = 15;
+      ctx.shadowColor = color;
+
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        
+        let wave = 0;
+        if (p.isAura) {
+           // More chaotic noise-like movement for outer rim
+           wave = Math.sin(time * p.speed * 3 + p.offset) * 20 * (1 + currentVolume * 2);
+           wave += Math.cos(time * p.speed * 1.5 + p.offset * 2) * 10;
+        } else {
+           // Subtle breathing for inner core
+           wave = Math.sin(time * p.speed + p.offset) * 5 * (1 + currentVolume * 3);
+        }
+        
+        // normal vector
+        const len = Math.sqrt(p.origX*p.origX + p.origY*p.origY + p.origZ*p.origZ);
+        const nx = p.origX / len;
+        const ny = p.origY / len;
+        const nz = p.origZ / len;
+
+        let x = p.origX * expand + nx * wave;
+        let y = p.origY * expand + ny * wave;
+        let z = p.origZ * expand + nz * wave;
+
+        // Rotate X
+        const xy = cosX * y - sinX * z;
+        const xz = sinX * y + cosX * z;
+        y = xy;
+        z = xz;
+
+        // Rotate Y
+        const yx = cosY * x + sinY * z;
+        const yz = -sinY * x + cosY * z;
+        x = yx;
+        z = yz;
+
+        // Perspective
+        const scale = 300 / (300 + z);
+        const px = cx + x * scale;
+        const py = cy + y * scale;
+
+        // Opacity
+        const depthAlpha = Math.max(0, Math.min(1, 1 - (z + radius) / (radius * 2.5)));
+        const alpha = p.isAura ? depthAlpha * 0.4 : depthAlpha * 0.8;
+        
+        // Use pure white/silver for the particles themselves to match the image, glow handles color
+        ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+        ctx.shadowBlur = p.isAura ? 15 : 0; // Only outer/edge particles cast strong glow for performance & aesthetics
+        
+        const size = Math.max(0.1, (p.isAura ? 0.8 : 1.2) * scale);
+        
+        ctx.beginPath();
+        ctx.arc(px, py, size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      animationFrameId = requestAnimationFrame(render);
+    };
+
+    render();
+
+    return () => cancelAnimationFrame(animationFrameId);
+  }, [color, isConnected, volume]);
+
+  return <canvas ref={canvasRef} width={500} height={500} className="w-[120%] h-[120%] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none mix-blend-screen opacity-90 transition-opacity duration-700" />;
 }

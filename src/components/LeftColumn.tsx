@@ -1,9 +1,18 @@
 import React from 'react';
-import { BatteryMedium, Wifi, Upload, Clock } from 'lucide-react';
+import { BatteryMedium, Wifi, Upload, Clock, Activity } from 'lucide-react';
 
-export function LeftColumn() {
+interface DebugEvent {
+  id: string;
+  step: number;
+  title: string;
+  message: string;
+  isError: boolean;
+  timestamp: string;
+}
+
+export function LeftColumn({ debugEvents, onClearDebug }: { debugEvents: DebugEvent[], onClearDebug: () => void }) {
   return (
-    <div className="w-80 flex flex-col gap-6">
+    <div className="w-80 flex flex-col gap-6 max-h-full overflow-hidden">
       
       <div className="flex flex-col gap-4">
         <h2 className="text-[10px] font-mono tracking-widest text-white/50 uppercase">System Overview</h2>
@@ -24,17 +33,30 @@ export function LeftColumn() {
         </div>
       </div>
 
-      <div className="border border-cyan-500/20 bg-black/40 backdrop-blur-md rounded-2xl p-5 flex flex-col gap-5 flex-1">
-        <h2 className="text-[10px] font-mono tracking-widest text-cyan-400/80 uppercase">Today's Schedule</h2>
-        <div className="flex flex-col gap-4">
-           <ScheduleItem time="11:00 AM" desc="Project Meeting" />
-           <ScheduleItem time="01:00 PM" desc="Lunch with Team" />
-           <ScheduleItem time="04:30 PM" desc="Client Presentation" />
-           <ScheduleItem time="07:00 PM" desc="Gym & Workout" />
+      <div className="border border-cyan-500/20 bg-black/40 backdrop-blur-md rounded-2xl flex flex-col overflow-hidden flex-1">
+        <div className="p-3 border-b border-cyan-500/30 bg-cyan-950/30 flex justify-between items-center">
+           <span className="text-[10px] font-mono text-cyan-400 tracking-widest uppercase flex items-center gap-2">
+              <Activity size={12} className="text-cyan-400 animate-pulse" />
+              Voice Debugger
+           </span>
+           <button onClick={onClearDebug} className="text-[10px] text-cyan-500 hover:text-cyan-300 uppercase tracking-wider">Clear</button>
         </div>
-        <button className="mt-auto w-full py-3 rounded-xl border border-cyan-500/30 bg-cyan-900/20 text-cyan-400 text-xs font-semibold tracking-wider hover:bg-cyan-500/20 transition-all">
-          View Calendar
-        </button>
+        <div className="p-4 flex-1 overflow-y-auto font-mono text-[10px] flex flex-col gap-3 min-h-0">
+           {debugEvents.length === 0 && (
+             <div className="text-cyan-600/50 flex flex-col items-center justify-center h-full gap-2">
+                <span>Waiting for vocal input...</span>
+             </div>
+           )}
+           {debugEvents.map(ev => (
+              <div key={ev.id} className="flex flex-col gap-1 border-b border-cyan-500/10 pb-2 last:border-0 last:pb-0">
+                 <div className="flex gap-2 items-center">
+                    <span className="text-cyan-600">[{ev.timestamp}]</span>
+                    <span className="text-cyan-300 font-bold">Step {ev.step}: {ev.title}</span>
+                 </div>
+                 <span className={`${ev.isError ? 'text-red-400' : 'text-white/60'} leading-relaxed`}>{ev.message}</span>
+              </div>
+           ))}
+        </div>
       </div>
 
     </div>

@@ -1,6 +1,6 @@
 {
   "name": "OMEGA AI",
   "description": "The Ultimate Personal AI Operating System",
-  "requestFramePermissions": ["microphone"],
+  "requestFramePermissions": ["microphone", "geolocation"],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

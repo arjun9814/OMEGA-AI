@@ -12,13 +12,13 @@ export function BottomBar({ isConnected, connect, disconnect, error }: { isConne
          <h2 className="absolute top-[-10px] left-1/2 -translate-x-1/2 bg-[#050a15] px-4 text-[10px] font-mono tracking-widest text-cyan-400/80 uppercase">Quick Access</h2>
          
          <div className="flex justify-between items-center h-full px-4">
-            <AppIcon icon={<Play size={24} />} label="YouTube" color="text-red-500" gradient="from-red-500/20 to-transparent" />
-            <AppIcon icon={<div className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center text-black font-bold text-[10px]">S</div>} label="Spotify" color="text-emerald-500" gradient="from-emerald-500/20 to-transparent" />
-            <AppIcon icon={<Chrome size={24} />} label="Chrome" color="text-blue-400" gradient="from-blue-500/20 to-transparent" />
-            <AppIcon icon={<MessageCircle size={24} />} label="WhatsApp" color="text-green-500" gradient="from-green-500/20 to-transparent" />
-            <AppIcon icon={<Camera size={24} />} label="Camera" color="text-zinc-300" />
-            <AppIcon icon={<Calculator size={24} />} label="Calculator" color="text-zinc-300" />
-            <AppIcon icon={<Folder size={24} />} label="Files" color="text-blue-400" />
+            <AppIcon icon={<Play size={24} />} label="YouTube" color="text-red-500" gradient="from-red-500/20 to-transparent" onClick={() => window.open('https://youtube.com', '_blank', 'noopener,noreferrer')} />
+            <AppIcon icon={<div className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center text-black font-bold text-[10px]">S</div>} label="Spotify" color="text-emerald-500" gradient="from-emerald-500/20 to-transparent" onClick={() => window.open('https://open.spotify.com', '_blank', 'noopener,noreferrer')} />
+            <AppIcon icon={<Chrome size={24} />} label="Chrome" color="text-blue-400" gradient="from-blue-500/20 to-transparent" onClick={() => window.open('https://google.com', '_blank', 'noopener,noreferrer')} />
+            <AppIcon icon={<MessageCircle size={24} />} label="WhatsApp" color="text-green-500" gradient="from-green-500/20 to-transparent" onClick={() => window.open('https://web.whatsapp.com', '_blank', 'noopener,noreferrer')} />
+            <AppIcon icon={<Camera size={24} />} label="Camera" color="text-zinc-300" onClick={() => alert('Camera app requires native device access.')} />
+            <AppIcon icon={<Calculator size={24} />} label="Calculator" color="text-zinc-300" onClick={() => window.open('https://www.google.com/search?q=calculator', '_blank', 'noopener,noreferrer')} />
+            <AppIcon icon={<Folder size={24} />} label="Files" color="text-blue-400" onClick={() => alert('File explorer requires native device access.')} />
             {/* Added Shield icon for System Control - We can just use an icon here, but App.tsx currently controls view by side-tabs */}
             <AppIcon icon={<Settings size={24} />} label="Settings" color="text-zinc-300" />
             <AppIcon icon={<Plus size={24} />} label="Add" color="text-white/50" border="border-white/20 border-dashed" noBg />
@@ -57,9 +57,9 @@ export function BottomBar({ isConnected, connect, disconnect, error }: { isConne
   );
 }
 
-function AppIcon({ icon, label, color, gradient, border = "border-white/10", noBg = false }: { icon: React.ReactNode, label: string, color: string, gradient?: string, border?: string, noBg?: boolean }) {
+function AppIcon({ icon, label, color, gradient, border = "border-white/10", noBg = false, onClick }: { icon: React.ReactNode, label: string, color: string, gradient?: string, border?: string, noBg?: boolean, onClick?: () => void }) {
   return (
-    <button className="flex flex-col items-center gap-3 group">
+    <button className="flex flex-col items-center gap-3 group" onClick={onClick}>
       <div className={`w-14 h-14 rounded-2xl flex items-center justify-center border ${border} transition-all duration-300 group-hover:scale-105 group-hover:border-cyan-500/50 relative overflow-hidden ${noBg ? '' : 'bg-white/5'}`}>
          {gradient && <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-50`} />}
          <div className={`relative z-10 ${color}`}>
